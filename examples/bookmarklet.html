@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+	<head>
+	</head>
+	<body>
+
+		<style>
+			body{
+				display: flex;
+				justify-content: center;
+				flex-flow: row;
+			}
+
+			.form-outer{
+				background: lightgrey;
+				width: 33%;
+				height: 50vh;
+			}
+
+			.form1{
+				background: red;
+			}
+
+			.form2{
+				background: green;
+			}
+
+			.form3{
+				background: blue;
+			}
+		</style>
+
+		<a class="btn" href="javascript:(function(){var script = document.createElement('script');script.type = 'text/javascript';script.crossorigin = 'crossorigin';script.src = 'https://conversational-form-0iznjsw.stackpathdns.com/conversational-form.min.js';document.getElementsByTagName('head')[0].appendChild(script);})();">Start the Conversation</a>
+
+		<!-- Conversational Form will inject into "cf-context" -->
+		<div class="form-outer form1" cf-context>
+			<!-- Conversational Form will auto-run because of attribute "cf-form" -->
+			<form id="form-1" cf-form>
+				<input type="text" cf-questions="Form 1 question 1/1.." />
+			</form>
+		</div>
+
+		<!-- Conversational Form will inject into "cf-context" -->
+		<div class="form-outer form2" cf-context>
+			<!-- Conversational Form will auto-run because of attribute "cf-form" -->
+			<form id="form-2" cf-form onsubmit="return form2submitted(event)">
+				<input type="text" cf-questions="Form 2 question 1/2 .." />
+				<input type="text" cf-questions="Form 2 question 2/2.." />
+			</form>
+		</div>
+
+
+		<!-- Conversational Form will inject into "cf-context" -->
+		<div class="form-outer form3" id="form-3-context">
+			<form id="form-3">
+				<input type="text" cf-questions="Form 3 question 1/1 .." />
+			</form>
+		</div>
+
+	</body>
+</html>
