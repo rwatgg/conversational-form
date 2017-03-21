@@ -67,6 +67,21 @@ namespace cf {
 			return false;
 		}
 
+		public get highlighted():boolean{
+			if(!this.elements)
+				return false;
+
+			const elements: Array<IControlElement> = this.getElements();
+			for (var i = 0; i < elements.length; i++) {
+				let element: ControlElement = <ControlElement>elements[i];
+				if(element.highlight){
+					return true;
+				}
+			}
+
+			return false;
+		}
+
 		public set disabled(value: boolean){
 			if(value)
 				this.list.classList.add("disabled");
@@ -164,7 +179,9 @@ namespace cf {
 			const userInput: UserInput = dto.dto.input;
 
 			if(this.active){
-				let shouldFilter: boolean = dto.inputFieldActive;
+				const isNavKey: boolean = [Dictionary.keyCodes["left"], Dictionary.keyCodes["right"], Dictionary.keyCodes["down"], Dictionary.keyCodes["up"]].indexOf(dto.keyCode) != -1;
+				const shouldFilter: boolean = dto.inputFieldActive && !isNavKey;
+
 				if(shouldFilter){
 					// input field is active, so we should filter..
 					const dto: FlowDTO = (<InputKeyChangeDTO> event.detail).dto;
@@ -195,7 +212,7 @@ namespace cf {
 			}
 
 			if(!userInput.active && this.validateRowColIndexes() && this.tableableRows && (this.rowIndex == 0 || this.rowIndex == 1)){
-				this.tableableRows[this.rowIndex][this.columnIndex].el.focus();
+				this.tableableRows[this.rowIndex][this.columnIndex].focus = true;
 			}else if(!userInput.active){
 				userInput.setFocusOnInput();
 			}
@@ -226,13 +243,13 @@ namespace cf {
 
 			if(this.tableableRows[this.rowIndex]){
 				// when row index is changed we need to find the closest column element, we cannot expect them to be indexly aligned
-				const oldVector: ControlElementVector = this.tableableRows[oldRowIndex][this.columnIndex].positionVector;
+				const centerX: number = this.tableableRows[oldRowIndex] ? this.tableableRows[oldRowIndex][this.columnIndex].positionVector.centerX : 0
 				const items: Array <IControlElement> = this.tableableRows[this.rowIndex];
 				let currentDistance: number = 10000000000000;
 				for (let i = 0; i < items.length; i++) {
 					let element: IControlElement = <IControlElement>items[i];
-					if(currentDistance > Math.abs(oldVector.centerX - element.positionVector.centerX)){
-						currentDistance = Math.abs(oldVector.centerX - element.positionVector.centerX);
+					if(currentDistance > Math.abs(centerX - element.positionVector.centerX)){
+						currentDistance = Math.abs(centerX - element.positionVector.centerX);
 						this.columnIndex = i;
 					}
 				}
@@ -268,6 +285,7 @@ namespace cf {
 				let itemsVisible: Array<ControlElement> = [];
 				for (let i = 0; i < elements.length; i++) {
 					let element: ControlElement = <ControlElement>elements[i];
+					element.highlight = false;
 					let elementVisibility: boolean = true;
 					
 					// check for all words of input
@@ -300,6 +318,21 @@ namespace cf {
 				}
 				
 				this.filterListNumberOfVisible = itemsVisible.length;
+
+				// highlight first item
+				if(value != "" && this.filterListNumberOfVisible > 0)
+					itemsVisible[0].highlight = true;
+			}
+		}
+
+		public clickOnHighlighted(){
+			const elements: Array<IControlElement> = this.getElements();
+			for (let i = 0; i < elements.length; i++) {
+				let element: ControlElement = <ControlElement>elements[i];
+				if(element.highlight){
+					element.el.click();
+					break;
+				}
 			}
 		}
 
@@ -373,7 +406,6 @@ namespace cf {
 		}
 		
 		public focusFrom(angle: string){
-			
 			if(!this.tableableRows)
 				return;
 
@@ -386,23 +418,35 @@ namespace cf {
 
 			if(this.tableableRows[this.rowIndex] && this.tableableRows[this.rowIndex][this.columnIndex]){
 				this.ignoreKeyboardInput = true;
-				this.tableableRows[this.rowIndex][this.columnIndex].el.focus();
+				this.tableableRows[this.rowIndex][this.columnIndex].focus = true;
 			}else{
 				this.resetTabList();
 			}
 		}
 
+		public updateStateOnElementsFromTag(tag: ITag){
+			for (var index = 0; index < this.elements.length; index++) {
+				var element: any = this.elements[index];
+
+				if(element.referenceTag == tag){
+					this.updateStateOnElements(element);
+					break;
+				}
+			}
+		}
+
 		public updateStateOnElements(controlElement: IControlElement){
-			this.disabled = true;
 			this.currentControlElement = controlElement;
 
-			if(controlElement.type == "RadioButton"){
+			if(this.currentControlElement.type == "RadioButton"){
 				// uncheck other radio buttons...
 				const elements: Array<IControlElement> = this.getElements();
 				for (let i = 0; i < elements.length; i++) {
 					let element: RadioButton = <RadioButton>elements[i];
 					if(element != controlElement){
 						element.checked = false;
+					}else{
+						element.checked = true;
 					}
 				}
 			}
@@ -424,7 +468,6 @@ namespace cf {
 			}
 
 			// generate text value for ChatReponse
-
 			if(this.elements && this.elements.length > 0){
 				switch(this.elements[0].type){
 					case "CheckboxButton" :
@@ -494,6 +537,16 @@ namespace cf {
 			return dto;
 		}
 
+		public clearTagsAndReset(){
+			this.reset();
+
+			if(this.elements){
+				while(this.elements.length > 0){
+					this.elements.pop().dealloc();
+				}
+			}
+		}
+
 		public buildTags(tags: Array<ITag>){
 			this.disabled = false;
 
@@ -501,11 +554,7 @@ namespace cf {
 			const bottomList: HTMLUListElement = (<HTMLUListElement> this.el.parentNode).getElementsByTagName("ul")[1];
 
 			// remove old elements
-			if(this.elements ){
-				while(this.elements.length > 0){
-					this.elements.pop().dealloc();
-				}
-			}
+			this.clearTagsAndReset();
 
 			this.elements = [];
 

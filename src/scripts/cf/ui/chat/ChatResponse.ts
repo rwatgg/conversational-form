@@ -141,6 +141,11 @@ namespace cf {
 				// innerResponse = innerResponse.split("{...}").join(this.responseLink.parsedResponse);
 			}
 
+			// check if response contains an image as answer
+			const responseContains: boolean = innerResponse.indexOf("contains-image") != -1;
+			if(responseContains)
+				this.textEl.classList.add("contains-image");
+
 			// now set it
 			this.textEl.innerHTML = innerResponse;
 			this.parsedResponse = innerResponse;

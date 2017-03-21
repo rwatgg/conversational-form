@@ -33,10 +33,12 @@ namespace cf {
 	}
 
 	export class ConversationalForm{
-		public version: string = "pre-0.9.1";
+		public version: string = "0.9.2";
 
 		public static animationsEnabled: boolean = true;
+		public static illustrateAppFlow: boolean = true;
 
+		private cdnPath: string = "//conversational-form-{version}-0iznjsw.stackpathdns.com/";
 		/**
 		 * createId
 		 * Id of the instance, to isolate events
@@ -78,14 +80,20 @@ namespace cf {
 
 		constructor(options: ConversationalFormOptions){
 			window.ConversationalForm = this;
-			
+
+			this.cdnPath = this.cdnPath.split("{version}").join(this.version.split(".").join(""));
+
+			console.log('Conversational Form > version:', this.version);
+
 			window.ConversationalForm[this.createId] = this;
 
 			// set a general step validation callback
 			if(options.flowStepCallback)
 				FlowManager.generalFlowStepCallback = options.flowStepCallback;
 			
-			if(document.getElementById("conversational-form-development") || options.loadExternalStyleSheet == false){
+			this.isDevelopment = ConversationalForm.illustrateAppFlow = !!document.getElementById("conversational-form-development");
+			
+			if(this.isDevelopment || options.loadExternalStyleSheet == false){
 				this.loadExternalStyleSheet = false;
 			}
 
@@ -131,7 +139,7 @@ namespace cf {
 				// not in development/examples, so inject production css
 				const head: HTMLHeadElement = document.head || document.getElementsByTagName("head")[0];
 				const style: HTMLStyleElement = document.createElement("link");
-				const githubMasterUrl: string = "//conversational-form-0iznjsw.stackpathdns.com/conversational-form.min.css";
+				const githubMasterUrl: string = this.cdnPath + "conversational-form.min.css";
 				style.type = "text/css";
 				style.media = "all";
 				style.setAttribute("rel", "stylesheet");
@@ -220,9 +228,20 @@ namespace cf {
 			}
 		}
 
-		public getFormData(): FormData{
-			var formData: FormData = new FormData(this.formEl);
-			return formData;
+		public getFormData(serialized: boolean = false): FormData | any{
+			if(serialized){
+				const serialized: any = {}
+				for(var i = 0; i < this.tags.length; i++){
+					const element = this.tags[i];
+					if(element.name && element.value)
+						serialized[element.name] = element.value
+				}
+
+				return serialized
+			}else{
+				var formData: FormData = new FormData(this.formEl);
+				return formData;
+			}
 		}
 
 		public addRobotChatResponse(response: string){
@@ -267,8 +286,7 @@ namespace cf {
 				if(tag.type == "radio" || tag.type == "checkbox"){
 					if(!groups[tag.name])
 						groups[tag.name] = [];
-					
-					console.log((<any>this.constructor).name, 'tag.name]:', tag.name);
+
 					groups[tag.name].push(tag);
 				}
 			}
@@ -295,9 +313,6 @@ namespace cf {
 		}
 
 		private setupUI(){
-			console.log('Conversational Form > start > mapped DOM tags:', this.tags);
-			console.log('----------------------------------------------');
-
 			// start the flow
 			this.flowManager = new FlowManager({
 				cfReference: this,
@@ -330,7 +345,8 @@ namespace cf {
 			innerWrap.appendChild(this.chatList.el);
 
 			this.userInput = new UserInput({
-				eventTarget: this.eventTarget
+				eventTarget: this.eventTarget,
+				cfReference: this
 			});
 
 			innerWrap.appendChild(this.userInput.el);
@@ -361,9 +377,10 @@ namespace cf {
 		/**
 		* @name remapTagsAndStartFrom
 		* index: number, what index to start from
-		* setCurrentTagValue: boolean, usually this method is called when wanting to loop or skip over questions, therefore it might be usefull to set the valie of the current tag before changing index.
+		* setCurrentTagValue: boolean, usually this method is called when wanting to loop or skip over questions, therefore it might be usefull to set the value of the current tag before changing index.
+		* ignoreExistingTags: boolean, possible to ignore existing tags, to allow for the flow to just "happen"
 		*/
-		public remapTagsAndStartFrom(index: number = 0, setCurrentTagValue: boolean = false){
+		public remapTagsAndStartFrom(index: number = 0, setCurrentTagValue: boolean = false, ignoreExistingTags: boolean = false){
 			if(setCurrentTagValue){
 				this.chatList.setCurrentUserResponse(this.userInput.getFlowDTO());
 			}
@@ -373,11 +390,22 @@ namespace cf {
 				tag.refresh();
 			}
 
-			this.flowManager.startFrom(index);
+			this.flowManager.startFrom(index, ignoreExistingTags);
+		}
+
+		/**
+		* @name focus
+		* Sets focus on Conversational Form
+		*/
+		public focus(){
+			if(this.userInput)
+				this.userInput.setFocusOnInput();
 		}
 
 		public doSubmitForm(){
 			this.el.classList.add("done");
+
+			this.userInput.reset();
 
 			if(this.submitCallback){
 				// remove should be called in the submitCallback
@@ -428,36 +456,50 @@ namespace cf {
 		}
 
 		// to illustrate the event flow of the app
-		public static ILLUSTRATE_APP_FLOW: boolean = true;
 		public static illustrateFlow(classRef: any, type: string, eventType: string, detail: any = null){
 			// ConversationalForm.illustrateFlow(this, "dispatch", FlowEvents.USER_INPUT_INVALID, event.detail);
 			// ConversationalForm.illustrateFlow(this, "receive", event.type, event.detail);
 
-			if(ConversationalForm.ILLUSTRATE_APP_FLOW && navigator.appName != 'Netscape'){
-				const highlight: string = "font-weight: 900; background: pink; color: black; padding: 0px 5px;";
+			if(ConversationalForm.illustrateAppFlow){
+				const highlight: string = "font-weight: 900; background: "+(type == "receive" ? "#e6f3fe" : "pink")+"; color: black; padding: 0px 5px;";
 				console.log("%c** event flow: %c" + eventType + "%c flow type: %c" + type + "%c from: %c"+(<any> classRef.constructor).name, "font-weight: 900;",highlight, "font-weight: 400;", highlight, "font-weight: 400;", highlight);
 				if(detail)
 					console.log("** event flow detail:", detail);
 			}
 		}
-	}
-}
 
+		private static hasAutoInstantiated: boolean = false;
+		public static autoStartTheConversation() {
+			if(ConversationalForm.hasAutoInstantiated)
+				return;
 
-// check for a form element with attribute:
+			// auto start the conversation
+			const formElements: NodeListOf<Element> = document.querySelectorAll("form[cf-form]") || document.querySelectorAll("form[cf-form-element]");
+			const formContexts: NodeListOf<Element> = document.querySelectorAll("*[cf-context]");
 
-window.addEventListener("load", () =>{
-	const formElements: NodeListOf<Element> = document.querySelectorAll("form[cf-form]") || document.querySelectorAll("form[cf-form-element]");
-	const formContexts: NodeListOf<Element> = document.querySelectorAll("*[cf-context]");
+			if(formElements && formElements.length > 0){
+				for (let i = 0; i < formElements.length; i++) {
+					let form: HTMLFormElement = <HTMLFormElement>formElements[i];
+					let context: HTMLFormElement = <HTMLFormElement>formContexts[i];
+					new cf.ConversationalForm({
+						formEl: form,
+						context: context
+					});
+				}
 
-	if(formElements && formElements.length > 0){
-		for (let i = 0; i < formElements.length; i++) {
-			let form: HTMLFormElement = <HTMLFormElement>formElements[i];
-			let context: HTMLFormElement = <HTMLFormElement>formContexts[i];
-			new cf.ConversationalForm({
-				formEl: form,
-				context: context
-			});
+				ConversationalForm.hasAutoInstantiated = true;
+			}
 		}
 	}
-}, false);
+
+}
+
+if(document.readyState == "complete"){
+	// if document alread instantiated, usually this happens if Conversational Form is injected through JS
+	cf.ConversationalForm.autoStartTheConversation();
+}else{
+	// await for when document is ready
+	window.addEventListener("load", () =>{
+		cf.ConversationalForm.autoStartTheConversation();
+	}, false);
+}

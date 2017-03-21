@@ -1,10 +1,12 @@
 # Conversational Form
+[![License: MIT](https://img.shields.io/badge/License-MIT-orange.svg)](https://github.com/space10-community/conversational-form/blob/master/LICENSE.md)
+[![npm version](https://img.shields.io/npm/v/conversational-form.svg)](https://www.npmjs.com/package/conversational-form)
 
 **Turning web forms into conversations.** Conversational Form is an open-source concept by <a href="https://www.space10.io">SPACE10</a> to easily turn any form element on a web page into a conversational form interface. It features conversational replacement of all input elements, reusable variables from previous questions and complete customization and control over the styling.
 
 <a href="https://medium.com/conversational-interfaces/introducing-the-conversational-form-c3166eb2ee2f#.yq5axcfcq" target="_blank">Learn why we did it</a>
 
-<a href="https://space10-community.github.io/conversational-form/" target="_blank" rel="Quick demo">![Quick demo](https://raw.githubusercontent.com/space10-community/conversational-form/master/docs/readme-cf.gif)</a>
+<a href="https://space10-community.github.io/conversational-form/" target="_blank" rel="Quick demo">![Quick demo](https://raw.githubusercontent.com/space10-community/conversational-form/master/docs/images/readme-cf.gif)</a>
 
 Below you will find guides to inlcude the ConversationalForm into a page containing a form or <a href="https://space10-community.github.io/conversational-form/" target="_blank" rel="Quick demo">try a quick demo</a>
 
@@ -14,7 +16,7 @@ Below you will find guides to inlcude the ConversationalForm into a page contain
 Include ConversationalForm in your page
 
 ```html
-<script type="text/javascript" src="https://conversational-form-0iznjsw.stackpathdns.com/conversational-form.min.js" crossorigin></script>
+<script type="text/javascript" src="https://conversational-form-092-0iznjsw.stackpathdns.com/conversational-form.min.js" crossorigin></script>
 ```
 
 ConversationalForm will automatically look through the DOM for a form element with the attibute `cf-form`, and auto-instantiate.
@@ -176,6 +178,12 @@ When instantiating ConversationalForm a reference to the instance will be availa
 window.ConversationalForm
 ```
 
+### focus
+Sets focus on Conversational Form'
+````javascript
+window.ConversationalForm.focus();
+````
+
 ### addRobotChatResponse
 add a robot reponse, this you would usually do at the end of a process.
 
@@ -200,17 +208,18 @@ window.ConversationalForm.remove();
 ```
 
 ### getFormData
-get the FormData object of mapped form element
+get the FormData object of mapped form element, pass in true to get a serialized object back (JSON).
 
 ```javascript
-window.ConversationalForm.getFormData();
+window.ConversationalForm.getFormData(serialized: boolean);
 ```
 
 ### remapTagsAndStartFrom: 
 remap registered tags and start flow from {index}
+possible to ignore existing tags, to allow for the flow to just "happen"
 
 ```javascript
-window.ConversationalForm.remapTagsAndStartFrom(index);
+window.ConversationalForm.remapTagsAndStartFrom(index, setCurrentTagValue, ignoreExistingTags);
 ```
 
 # Overwrite styles
@@ -222,6 +231,11 @@ You can overwrite the UI with your own styles. Please see the source styles/css 
 We welcome contributions in the form of bug reports, pull requests, or thoughtful discussions in the [GitHub issue tracker](https://github.com/space10-community/conversational-form/issues).
 
 ConversationalForm is a concept by [SPACE10](https://www.space10.io/). Brought to life by [Felix Nielsen](http://twitter.com/flexmotion), [RWATGG](http://rwatgg.com). Designed by [Charlie Isslander](https://twitter.com/charlieissland).
+
+## Get the source
+### Bower
+
+	$ bower install conversational-form --save
 
 ## Build the source
 
@@ -262,12 +276,32 @@ watch task, watches .styl, .ts, .jpg, .png, .gif, compiles to /build
 	# compiles distribution files
 	$ gulp dist
 
+	# run docs
+	$ gulp --docs
+
+	# build docs
+	$ gulp build --docs
+
 
 ### install new packages for dev
 
 	$ cd gulp-tasks
 	$ npm install --save-dev XX
 
+### Version log
+User previous versions. These versions are also available through bower, npm and Github tags
+
+[v0.9.1](https://github.com/space10-community/conversational-form/tree/0.9.1)
+```html
+<!-- v0.9.1 -->
+<script type="text/javascript" src="https://conversational-form-091-0iznjsw.stackpathdns.com/conversational-form.min.js" crossorigin></script>
+```
+
+[v0.9.0](https://github.com/space10-community/conversational-form/tree/0.9.0)
+```html
+<!-- v0.9.0 -->
+<script type="text/javascript" src="https://conversational-form-0iznjsw.stackpathdns.com/conversational-form.min.js" crossorigin></script>
+```
 
 ## Examples and tests
 When you are up and running, you can find a few form tests and examples in the /examples folder.

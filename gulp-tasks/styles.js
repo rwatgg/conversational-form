@@ -20,6 +20,7 @@ function swallowError(error) {
 global.gulp.task('stylus', function() {
 	var src = [
 		global.srcFolder + "/styles/**/*.styl",
+		global.srcFolder + "../examples/src/styles/**/*.styl",
 		"!" + global.srcFolder + "/styles/**/*-variables.styl"
 	]
 	var dst = global.buildFolder;
@@ -41,28 +42,63 @@ global.gulp.task('stylus', function() {
 	return stream;
 });
 
-global.gulp.task('styles-build', ['stylus'], function(){
+global.gulp.task('stylus-examples', function(){
 	var src = [
-		global.buildFolder + "**/*.css",
-		global.buildFolder + "cf/cf.css",
-		global.buildFolder + "cf/ui/control-elements/cf-control-elements.css",
-		global.buildFolder + "cf/ui/control-elements/cf-button.css",
-		global.buildFolder + "cf/ui/control-elements/cf-radio-button.css",
-		global.buildFolder + "cf/ui/control-elements/cf-checkbox-button.css",
-		global.buildFolder + "cf/ui/control-elements/cf-options-list.css",
-		global.buildFolder + "cf/ui/control-elements/cf-upload-file-ui.css",
-		global.buildFolder + "cf/ui/cf-input.css",
-		global.buildFolder + "cf/ui/cf-info.css",
-		global.buildFolder + "cf/ui/cf-list-button.css",
-		global.buildFolder + "cf/ui/chat/cf-chat-response.css",
-		global.buildFolder + "cf/ui/chat/cf-chat.css",
-		
-		"!" + global.buildFolder + "conversational-form.css",
-		"!" + global.distFolder + "conversational-form.min.css",
+		global.srcFolder + "../examples/src/styles/examples-boilerplate.styl",
 	]
+	var dst = global.buildFolder + "../examples";
+	console.log(dst);
 
 	var stream = global.gulp.src(src)
-		.pipe(concat('conversational-form.css'))
+		// .pipe(flatten()) // flatten folder structure
+		.pipe(changed(dst, {
+			extension: '.css'
+		}))
+		.pipe(stylus({
+			use: [nib(), rupture()],
+			errors: true
+		}))
+		.on('error', swallowError)
+		.pipe(global.gulp.dest(dst))
+		.pipe(livereload())
+		.pipe(notify("Stylus compiled."));
+
+	return stream;
+});
+
+global.gulp.task('styles-build', ['stylus'], function(){
+	if(global.isDocs){
+		var src = [
+			global.buildFolder + "**/*.css",
+			"!" + global.buildFolder + "conversational-form-docs.css",
+			"!" + global.buildFolder + "conversational-form-docs.min.css",
+		]
+	}else{
+		var src = [
+			global.buildFolder + "**/*.css",
+			global.buildFolder + "cf/cf.css",
+			global.buildFolder + "cf/ui/control-elements/cf-control-elements.css",
+			global.buildFolder + "cf/ui/control-elements/cf-button.css",
+			global.buildFolder + "cf/ui/control-elements/cf-radio-button.css",
+			global.buildFolder + "cf/ui/control-elements/cf-checkbox-button.css",
+			global.buildFolder + "cf/ui/control-elements/cf-options-list.css",
+			global.buildFolder + "cf/ui/control-elements/cf-upload-file-ui.css",
+			global.buildFolder + "cf/ui/cf-input.css",
+			global.buildFolder + "cf/ui/cf-info.css",
+			global.buildFolder + "cf/ui/cf-list-button.css",
+			global.buildFolder + "cf/ui/chat/cf-chat-response.css",
+			global.buildFolder + "cf/ui/chat/cf-chat.css",
+			
+			"!" + global.buildFolder + "examples-boilerplate.css",
+			"!" + global.buildFolder + "conversational-form-docs.css",
+			"!" + global.buildFolder + "conversational-form-docs.min.css",
+			"!" + global.buildFolder + "conversational-form.css",
+			"!" + global.distFolder + "conversational-form.min.css",
+		]
+	}
+
+	var stream = global.gulp.src(src)
+		.pipe(concat(global.isDocs ? 'conversational-form-docs.css' : 'conversational-form.css'))
 		.pipe(global.gulp.dest(global.distFolder))
 		.pipe(cleanCSS())
 		.pipe(rename({suffix: '.min'}))

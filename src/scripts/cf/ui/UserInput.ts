@@ -12,6 +12,10 @@ namespace cf {
 		inputFieldActive: boolean
 	}
 
+	export interface IUserInputOptions extends IBasicElementOptions{
+		cfReference: ConversationalForm
+	}
+
 	export const UserInputEvents = {
 		SUBMIT: "cf-input-user-input-submit",
 		//	detail: string
@@ -30,6 +34,7 @@ namespace cf {
 		public static ERROR_TIME: number = 2000;
 		public el: HTMLElement;
 
+		private cfReference: ConversationalForm;
 		private inputElement: HTMLTextAreaElement;
 		private submitButton: HTMLButtonElement;
 		private currentValue: string = "";
@@ -40,6 +45,7 @@ namespace cf {
 		private onSubmitButtonClickCallback: () => void;
 		private onInputFocusCallback: () => void;
 		private onInputBlurCallback: () => void;
+		private onOriginalTagChangedCallback: () => void;
 		private onControlElementProgressChangeCallback: () => void;
 		private errorTimer: number = 0;
 		private shiftIsDown: boolean = false;
@@ -81,9 +87,10 @@ namespace cf {
 			}
 		}
 
-		constructor(options: IBasicElementOptions){
+		constructor(options: IUserInputOptions){
 			super(options);
 
+			this.cfReference = options.cfReference;
 			this.eventTarget = options.eventTarget;
 			this.inputElement = this.el.getElementsByTagName("textarea")[0];
 			this.onInputFocusCallback = this.onInputFocus.bind(this);
@@ -110,6 +117,9 @@ namespace cf {
 
 			this.flowUpdateCallback = this.onFlowUpdate.bind(this);
 			this.eventTarget.addEventListener(FlowEvents.FLOW_UPDATE, this.flowUpdateCallback, false);
+
+			this.onOriginalTagChangedCallback = this.onOriginalTagChanged.bind(this);
+			this.eventTarget.addEventListener(TagEvents.ORIGINAL_ELEMENT_CHANGED, this.onOriginalTagChangedCallback, false);
 
 			this.inputInvalidCallback = this.inputInvalid.bind(this);
 			this.eventTarget.addEventListener(FlowEvents.USER_INPUT_INVALID, this.inputInvalidCallback, false);
@@ -151,12 +161,33 @@ namespace cf {
 			return value;
 		}
 
+		public reset(){
+			if(this.controlElements){
+				this.controlElements.clearTagsAndReset()
+			}
+		}
+
 		public onFlowStopped(){
 			if(this.controlElements)
-				this.controlElements.reset();
+				this.controlElements.clearTagsAndReset();
 			
 			this.disabled = true;
 			this.visible = false;
+		}
+
+		/**
+		* @name onOriginalTagChanged
+		* on domElement from a tag value changed..
+		*/
+		private onOriginalTagChanged(event: CustomEvent): void {
+			if(this.currentTag == event.detail.tag){
+				this.currentValue = this.inputElement.value = (<ITag | ITagGroup> event.detail.tag).value.toString()
+				this.onInputChange();
+			}
+
+			if(this.controlElements && this.controlElements.active){
+				this.controlElements.updateStateOnElementsFromTag(event.detail.tag)
+			}
 		}
 
 		private onInputChange(){
@@ -212,7 +243,7 @@ namespace cf {
 			// animate input field in
 			this.visible = true;
 
-			this._currentTag = <ITag | ITagGroup> event.detail;
+			this._currentTag = <ITag | ITagGroup> event.detail.tag;
 
 			this.el.setAttribute("tag-type", this._currentTag.type);
 
@@ -280,16 +311,19 @@ namespace cf {
 			if(event.keyCode == Dictionary.keyCodes["shift"])
 				this.shiftIsDown = true;
 			
+			const key: string = String.fromCharCode(event.keyCode);
+			
 			// prevent textarea line breaks
-			if(event.keyCode == Dictionary.keyCodes["enter"] && !event.shiftKey)
+			if(event.keyCode == Dictionary.keyCodes["enter"] && !event.shiftKey){
 				event.preventDefault();
-			else{
+			}else{
 				// handle password input
 				if(this._currentTag && this._currentTag.type == "password"){
-					if(event.key.toLowerCase() == "backspace")
+					if(event.keyCode === Dictionary.keyCodes["backspace"]){
 						this.currentValue = this.currentValue.length > 0 ? this.currentValue.slice(0, this.currentValue.length - 1) : "";
-					else
-						this.currentValue += event.key;
+					}else{
+						this.currentValue += key;
+					}
 				}
 			}
 		}
@@ -320,7 +354,7 @@ namespace cf {
 				var doesKeyTargetExistInCF: boolean = false;
 				var node = (<HTMLElement> event.target).parentNode;
 				while (node != null) {
-					if (node === window.ConversationalForm.el) {
+					if (node === this.cfReference.el) {
 						doesKeyTargetExistInCF = true;
 						break;
 					}
@@ -425,17 +459,22 @@ namespace cf {
 		}
 
 		private onEnterOrSubmitButtonSubmit(event: MouseEvent = null){
-			if(!this._currentTag){
-				// happens when a form is empty, so just play along and submit response to chatlist..
-				this.eventTarget.cf.addUserChatResponse(this.inputElement.value);
+			if(this.active && this.controlElements.highlighted){
+				// active input field and focus on control elements happens when a control element is highlighted
+				this.controlElements.clickOnHighlighted();
 			}else{
-				// we need to check if current tag is file
-				if(this._currentTag.type == "file" && event){
-					// trigger <input type="file" but only when it's from clicking button
-					(<UploadFileUI> this.controlElements.getElement(0)).triggerFileSelect();
+				if(!this._currentTag){
+					// happens when a form is empty, so just play along and submit response to chatlist..
+					this.eventTarget.cf.addUserChatResponse(this.inputElement.value);
 				}else{
-					// for groups, we expect that there is always a default value set
-					this.doSubmit();
+					// we need to check if current tag is file
+					if(this._currentTag.type == "file" && event){
+						// trigger <input type="file" but only when it's from clicking button
+						(<UploadFileUI> this.controlElements.getElement(0)).triggerFileSelect();
+					}else{
+						// for groups, we expect that there is always a default value set
+						this.doSubmit();
+					}
 				}
 			}
 		}
@@ -459,7 +498,6 @@ namespace cf {
 		}
 
 		public dealloc(){
-
 			this.inputElement.removeEventListener('blur', this.onInputBlurCallback, false);
 			this.onInputBlurCallback = null;
 

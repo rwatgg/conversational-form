@@ -33,13 +33,19 @@ namespace cf {
 		private eventTarget: EventDispatcher;
 
 		private cfReference: ConversationalForm;
-		private tags: Array<ITag>;
+		private tags: Array<ITag | ITagGroup>;
 
 		private stopped: boolean = false;
 		private maxSteps: number = 0;
 		private step: number = 0;
 		private savedStep: number = -1;
 		private stepTimer: number = 0;
+		/**
+		* ignoreExistingTags
+		* @type boolean
+		* ignore existing tags, usually this is set to true when using startFrom, where you don't want it to check for exisintg tags in the list
+		*/
+		private ignoreExistingTags: boolean = false;
 		private userInputSubmitCallback: () => void;
 
 		public get currentTag(): ITag | ITagGroup {
@@ -49,7 +55,8 @@ namespace cf {
 		constructor(options: FlowManagerOptions){
 			this.cfReference = options.cfReference;
 			this.eventTarget = options.eventTarget;
-			this.tags = options.tags;
+
+			this.setTags(options.tags);
 
 			this.maxSteps = this.tags.length;
 
@@ -131,7 +138,7 @@ namespace cf {
 			onValidationCallback();
 		}
 
-		public startFrom(indexOrTag: number | ITag){
+		public startFrom(indexOrTag: number | ITag, ignoreExistingTags: boolean = false){
 			if(typeof indexOrTag == "number")
 				this.step = indexOrTag;
 			else{
@@ -139,7 +146,13 @@ namespace cf {
 				this.step = this.tags.indexOf(indexOrTag);
 			}
 
-			this.validateStepAndUpdate();
+			this.ignoreExistingTags = ignoreExistingTags;
+			if(!this.ignoreExistingTags){
+				this.editTag(this.tags[this.step]);
+			}else{
+				//validate step, and ask for skipping of current step
+				this.showStep();
+			}
 		}
 
 		public start(){
@@ -181,9 +194,19 @@ namespace cf {
 		* go back in time and edit a tag.
 		*/
 		public editTag(tag: ITag): void {
+			this.ignoreExistingTags = false;
 			this.savedStep = this.step - 1;
 			this.step = this.tags.indexOf(tag); // === this.currentTag
 			this.validateStepAndUpdate();
+		}
+
+		private setTags(tags: Array<ITag | ITagGroup>){
+			this.tags = tags;
+
+			for(var i = 0; i < this.tags.length; i++){
+				const tag: ITag | ITagGroup = this.tags[i];
+				tag.eventTarget = this.eventTarget;
+			}
 		}
 
 		private skipStep(){
@@ -216,7 +239,10 @@ namespace cf {
 			this.currentTag.refresh();
 
 			this.eventTarget.dispatchEvent(new CustomEvent(FlowEvents.FLOW_UPDATE, {
-				detail: this.currentTag
+				detail: {
+					tag: this.currentTag,
+					ignoreExistingTag: this.ignoreExistingTags
+				}
 			}));
 		}
 	}
