@@ -496,7 +496,7 @@ namespace cf {
 
 if(document.readyState == "complete"){
 	// if document alread instantiated, usually this happens if Conversational Form is injected through JS
-	cf.ConversationalForm.autoStartTheConversation();
+	setTimeout(() => cf.ConversationalForm.autoStartTheConversation(), 0);
 }else{
 	// await for when document is ready
 	window.addEventListener("load", () =>{

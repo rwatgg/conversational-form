@@ -7,6 +7,8 @@ var notify = require("gulp-notify");
 var concat = require('gulp-concat');
 var rename = require('gulp-rename');
 var uglify = require('gulp-uglify');
+var replace = require('gulp-replace');
+var fs = require("fs");
 
 function swallowError(error) {
 	// If you want details of the error in the console
@@ -43,6 +45,7 @@ global.gulp.task('typescript', function() {
 global.gulp.task('scripts', function() {
 	var src = [
 		global.srcFolder + "/scripts/**/*.js",
+		"!" + global.srcFolder + "/scripts/**/ConversationalBookmarklet.js",
 		"!" + global.srcFolder + "/scripts/typings/**/*.ts"
 	];
 	var dst = global.buildFolder;
@@ -57,12 +60,35 @@ global.gulp.task('scripts', function() {
 	return stream
 });
 
+global.gulp.task('bookmarklet', function() {
+	var src = [
+		global.srcFolder + "/scripts/**/ConversationalBookmarklet.js",
+		"!" + global.srcFolder + "/scripts/typings/**/*.ts"
+	];
+
+	var dst = global.buildFolder;
+
+	var stream = global.gulp.src(src)
+		.pipe(uglify())
+		.pipe(global.gulp.dest(dst))
+	
+	var fileContent = fs.readFileSync(global.buildFolder + "/cf/ConversationalBookmarklet.js", "utf8");
+	console.log(fileContent);
+	
+	stream = global.gulp.src([global.srcFolder + "/html/bookmarklet.html"])
+		.pipe(replace('{script}', fileContent))
+		.pipe(gulp.dest(global.examplesFolder))
+		.pipe(livereload())
+		.pipe(notify("bookmarklet compiled."));
+
+	return stream
+});
+
 global.gulp.task('scripts-build', ['typescript', 'scripts'], function(){
 	// build order is important in a inheritance world
 	var src = [
 		global.buildFolder + "bower_components/promise-polyfill/promise.js",
 		global.buildFolder + "bower_components/custom-event-polyfill/custom-event-polyfill.js",
-		global.buildFolder + "cf/ConversationalForm.js",
 		global.buildFolder + "cf/ConversationalForm.plugin.js",
 		global.buildFolder + "cf/logic/Helpers.js",
 		global.buildFolder + "cf/logic/EventDispatcher.js",
@@ -86,7 +112,8 @@ global.gulp.task('scripts-build', ['typescript', 'scripts'], function(){
 		global.buildFolder + "cf/ui/UserInput.js",
 		global.buildFolder + "cf/ui/chat/ChatResponse.js",
 		global.buildFolder + "cf/ui/chat/ChatList.js",
-		global.buildFolder + "cf/logic/FlowManager.js"
+		global.buildFolder + "cf/logic/FlowManager.js",
+		global.buildFolder + "cf/ConversationalForm.js"
 	];
 
 	var stream = global.gulp.src(src)

@@ -26,6 +26,9 @@ global.buildFolder = buildFolder;
 var distFolder = isDocs ? rootPath + 'build/' : rootPath + 'dist/';
 global.distFolder = distFolder;
 
+var examplesFolder = rootPath + 'examples/';
+global.examplesFolder = examplesFolder;
+
 // Watch Files For Changes
 global.gulp.task('watch', ['bower', 'typescript', 'scripts', 'stylus', 'copy-images'], function() {
 	livereload.listen();
