@@ -7,8 +7,13 @@
 		<style>
 			.form-outer{
 				background: lightgrey;
-				width: 600px;
+				width: 100%;
 				height: 100vh;
+			}
+			#conversational-form{
+				width: 50vw;
+				left: auto;
+				right: 0px;
 			}
 		</style>
 
@@ -47,7 +52,8 @@
 			<form id="form" cf-form>
 				<!--<input type="text" required cf-questions="text field multiline....." name="multiline" value="">-->
 
-				<!--<input type="password" cf-questions="password field.. (NOT required)" name="password" value="">-->
+				<input type="password" pattern=".{5,10}" cf-questions="password 1 field.. (NOT required)" cf-error="Password needs to be between 5-10 chars" name="password1" value="">
+				<input type="input" cf-questions="none-password 2 field.. (NOT required)" name="input1" value="">
 
 				<!--<li class="fields">
 					<label for="billing:country_id2" class="required"><em>*</em>Land</label>

@@ -31,13 +31,16 @@
 			}
 		</style>
 
-		<a class="btn" href='javascript:!function(){var e=document.createElement("script");e.type="text/javascript",e.crossorigin="crossorigin",e.src="../dist/conversational-form.min.js",document.getElementsByTagName("head")[0].appendChild(e),console.log("bookmarklet running. ....")}();'>Start the Conversation</a>
+		<a class="btn" href='javascript:!function(){var e=document.createElement("script");e.onload=function(){for(var e=document.getElementsByTagName("form"),o=0;o<e.length;o++){var n=e[o];n.hasAttribute("cf-form")||new cf.ConversationalForm({formEl:n,context:n.parentNode})}},e.type="text/javascript",e.crossorigin="crossorigin",e.src="../dist/conversational-form.min.js",document.getElementsByTagName("head")[0].appendChild(e),console.log("bookmarklet running. ....")}();'>Start the Conversation</a>
 
 		<!-- Conversational Form will inject into "cf-context" -->
 		<div class="form-outer form1" cf-context>
 			<!-- Conversational Form will auto-run because of attribute "cf-form" -->
 			<form id="form-1" cf-form>
-				<input type="text" cf-questions="Form 1 question 1/1.." />
+				<label for="form-1-1">
+					Form 1 question 1/1..
+					<input type="text" id="form-1-1"/>
+				</label>
 			</form>
 		</div>
 
@@ -57,6 +60,9 @@
 				<input type="text" cf-questions="Form 3 question 1/1 .." />
 			</form>
 		</div>
+
+
+		<link type="text/css" rel="stylesheet" href="examples-boilerplate.css"/>
 
 	</body>
 </html>

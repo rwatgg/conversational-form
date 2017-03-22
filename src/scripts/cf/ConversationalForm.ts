@@ -474,7 +474,13 @@ namespace cf {
 				return;
 
 			// auto start the conversation
-			const formElements: NodeListOf<Element> = document.querySelectorAll("form[cf-form]") || document.querySelectorAll("form[cf-form-element]");
+			let formElements: NodeListOf<Element> = document.querySelectorAll("form[cf-form]");
+
+			// no form elements found, look for the old init attribute
+			if(formElements.length === 0){
+				formElements = document.querySelectorAll("form[cf-form-element]");
+			}
+
 			const formContexts: NodeListOf<Element> = document.querySelectorAll("*[cf-context]");
 
 			if(formElements && formElements.length > 0){
