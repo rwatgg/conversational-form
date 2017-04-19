@@ -6,6 +6,7 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, minimal-ui" />
 		<link rel="stylesheet" href="../docs/build/conversational-form-docs.min.css"> <!-- docs styling -->
 		<link rel="stylesheet" href="../examples/build/conversational-form-examples.min.css"> <!-- examples styling -->
+		<title>01 — 1/3</title>
 	</head>
 	<body>
 		<script src="../examples/build/cf/ConversationalFormExamples.js" id="examples-script"></script>
@@ -59,7 +60,7 @@
 
 				<article>
 					<h1 id="writer">
-						Conversational Form unaware of it's context
+						Conversational Form unaware of it's context 1/3
 					</h1>
 					<h2>
 						On the right you have the Conversational Form applied on top of a traditional form. It is unaware of it's context, so questions are ...
@@ -70,20 +71,9 @@
 			<section role="form">
 				<div class="form-outer">
 					<form id="form">
-						<fieldset>
-							<label for="firstname">Firstname</label>
-							<input required type="text" class="form-control" name="firstname" id="firstname">
-						</fieldset>
-
-						<fieldset>
-							<label for="lastname">Lastname</label>
-							<input required type="text" class="form-control" name="lastname" id="lastname">
-						</fieldset>
-
-						<fieldset>
-							<label for="email">Email</label>
-							<input required type="text" class="form-control" name="email" id="email">
-						</fieldset>
+						<input required type="text" class="form-control" name="firstname" id="firstname">
+						<input required type="text" class="form-control" name="lastname" id="lastname">
+						<input required type="text" class="form-control" name="email" id="email">
 
 						<button type="submit">Submit form</button>
 					</form>
@@ -274,10 +264,10 @@
 				formEl: document.getElementById("form"),
 				context: document.getElementById("cf-context"),
 				dictionaryRobot:{
-					"text": "I have not idea of the context!|Please write some text.|Please fill out this field.|Add some text."
+					"text": "I have not idea of the context!|I am so confused, please write some text."
 				},
 				submitCallback: function(cf){
-					cf.addRobotChatResponse("You have reached the end of step 1 <a href='' target='_self'>Go back..</a>")
+					cf.addRobotChatResponse("You have reached the end of step 1/3, go back to Welcome")
 				}
 			}
 

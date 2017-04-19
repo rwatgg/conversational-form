@@ -6,6 +6,7 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, minimal-ui" />
 		<link rel="stylesheet" href="../docs/build/conversational-form-docs.min.css"> <!-- docs styling -->
 		<link rel="stylesheet" href="../examples/build/conversational-form-examples.min.css"> <!-- examples styling -->
+		<title>Welcome</title>
 	</head>
 	<body>
 		<script src="../examples/build/cf/ConversationalFormExamples.js" id="examples-script"></script>
@@ -59,7 +60,7 @@
 
 				<article>
 					<h1 id="writer">
-						Welcome to the workshop
+						Welcome to the workshop 😊
 					</h1>
 					<h2>
 						By now you should have a good grasp of what the Workshop is about, on the right you have the flow that will guide you through each section.
@@ -277,7 +278,7 @@
 			var step = 0;
 
 			var onStepCallback = function(dto, success, error){
-				if(dto.text.toLowerCase() ==  "next"){
+				if(dto.text.toLowerCase() == "next"){
 					step++;
 					if(step == 1){
 						window.open("01-1-static.html")

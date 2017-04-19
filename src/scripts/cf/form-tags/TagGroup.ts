@@ -13,6 +13,7 @@ namespace cf {
 	// interface
 	export interface ITagGroupOptions{
 		elements: Array <ITag>;
+		domElement?: HTMLInputElement | HTMLSelectElement | HTMLButtonElement | HTMLOptionElement;
 	}
 
 	export interface ITagGroup extends ITag{
@@ -36,11 +37,12 @@ namespace cf {
 		* Array checked/choosen ITag's
 		*/
 		private _activeElements: Array<ITag>;
+		// event target..
 		private _eventTarget: EventDispatcher;
 
-		// event target..
 		public defaultValue: string; // not getting set... as taggroup differs from tag
 		public elements: Array <ITag>;
+		public domElement: HTMLInputElement | HTMLSelectElement | HTMLButtonElement | HTMLOptionElement;
 		
 		public get required(): boolean{
 			for (let i = 0; i < this.elements.length; i++) {
@@ -77,11 +79,11 @@ namespace cf {
 		}
 
 		public get name (): string{
-			return this.elements[0].name;
+			return this.domElement && this.domElement.hasAttribute("name") ? this.domElement.getAttribute("name") : this.elements[0].name;
 		}
 
 		public get id (): string{
-			return "tag-group";
+			return this.domElement && this.domElement.hasAttribute("id") ? this.domElement.getAttribute("id") : this.elements[0].id;
 		}
 
 		public get question():string{
@@ -131,6 +133,10 @@ namespace cf {
 
 		constructor(options: ITagGroupOptions){
 			this.elements = options.elements;
+			
+			// set wrapping element
+			this.domElement = options.domElement;
+
 			if(ConversationalForm.illustrateAppFlow)
 				console.log('Conversational Form > TagGroup registered:', this.elements[0].type, this);
 		}

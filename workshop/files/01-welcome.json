@@ -7,7 +7,7 @@
 		{
 			"tag": "fieldset",
 			"type": "Radio buttons",
-			"cf-input-placeholder": "",
+			"cf-input-placeholder": "Choose Yes",
 			"cf-questions": "Ok, ready to start?",
 			"children":[
 				{
@@ -25,30 +25,20 @@
 				}
 			]
 		},
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 		{
 			"tag": "input",
 			"type": "text",
 			"pattern": "^next$",
-			"value": "next",
-			"cf-questions": "Let's go to the first example, write 'next'"
+			"value": "",
+			"cf-questions": "Let's go to the first example, write <strong>'next'</strong> which will open a new window"
 		},
+
+
+
+
+
+
+
 		{
 			"tag": "select",
 			"cf-input-placeholder": "Choose one of the above",

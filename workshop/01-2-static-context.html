@@ -6,6 +6,7 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, minimal-ui" />
 		<link rel="stylesheet" href="../docs/build/conversational-form-docs.min.css"> <!-- docs styling -->
 		<link rel="stylesheet" href="../examples/build/conversational-form-examples.min.css"> <!-- examples styling -->
+		<title>01 — 2/3</title>
 	</head>
 	<body>
 		<script src="../examples/build/cf/ConversationalFormExamples.js" id="examples-script"></script>
@@ -59,10 +60,10 @@
 
 				<article>
 					<h1 id="writer">
-						Welcome to the workshop
+						Conversational Form with static context 2/3
 					</h1>
 					<h2>
-						A Conversational Form generated from JSON, see file <a href="files/formless.json" target="_blank">formless.json</a>
+						Here we have given Conversational Form some context through static inserted values, it is still somewhat unaware of it's context.
 					</h2>
 				</article>
 			</section>
@@ -274,7 +275,7 @@
 				formEl: document.getElementById("form"),
 				context: document.getElementById("cf-context"),
 				dictionaryRobot:{
-					"text": "I have not idea of the context!|Please write some text.|Please fill out this field.|Add some text."
+					"text": "I have not idea of the context!|I am so confused, please write some text."
 				},
 				submitCallback: function(cf){
 					cf.addRobotChatResponse("You have reached the end of step 1 <a href='' target='_self'>Go back..</a>")
