@@ -1,4 +1,18 @@
 // Docs version 1.0.0
+// declare module cf{
+// 	
+// }
+// interface cf{
+// 	ConversationalForm: any;
+// }
+// export type ConversationalForm = any;
+// interface ConversationalForm = any;
+// declare var ConversationalForm: any;
+var ConversationalForm = (function () {
+    function ConversationalForm() {
+    }
+    return ConversationalForm;
+}());
 var ConversationalFormExamples = (function () {
     function ConversationalFormExamples() {
         this.introTimer = 0;
@@ -26,8 +40,7 @@ var ConversationalFormExamples = (function () {
             _this.toggleMenuState();
             _this.h1writer.start();
             _this.introTimer = setTimeout(function () {
-                if (!document.getElementById("examples-script").getAttribute("manual-init"))
-                    _this.toggleConversation();
+                _this.toggleConversation();
             }, isDevelopment ? 0 : 2500);
         }, isDevelopment ? 0 : 500);
     };
@@ -42,11 +55,10 @@ var ConversationalFormExamples = (function () {
         this.introTimer = setTimeout(function () {
             document.getElementById("info").classList.add('show');
             _this.introTimer = setTimeout(function () {
-                document.querySelector("section[role='form']").classList.add('show');
+                document.getElementById("form").classList.add('show');
                 document.getElementById("cf-toggle-btn").classList.add('show');
                 _this.introTimer = setTimeout(function () {
-                    if (!document.getElementById("examples-script").getAttribute("manual-init"))
-                        _this.toggleConversation();
+                    _this.toggleConversation();
                 }, isDevelopment ? 0 : 1500);
             }, isDevelopment ? 0 : 3000);
         }, isDevelopment ? 0 : 1500);
