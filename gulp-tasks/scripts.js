@@ -151,6 +151,30 @@ global.gulp.task('scripts-docs-build', ['typescript-docs'], function(){
 	return stream;
 });
 
+// bookmarklet..
+global.gulp.task('bookmarklet', function() {
+	var src = [
+		global.srcFolder + "/scripts/**/ConversationalBookmarklet.js",
+		"!" + global.srcFolder + "/scripts/typings/**/*.ts"
+	];
+
+	var dst = global.buildFolder;
+
+	var stream = global.gulp.src(src)
+		.pipe(uglify())
+		.pipe(global.gulp.dest(dst))
+	
+	var fileContent = fs.readFileSync(global.buildFolder + "/cf/ConversationalBookmarklet.js", "utf8");
+	console.log(fileContent);
+	
+	stream = global.gulp.src([global.srcFolder + "/html/bookmarklet.html"])
+		.pipe(replace('{script}', fileContent))
+		.pipe(gulp.dest(global.examplesFolder))
+		.pipe(livereload())
+		.pipe(notify("bookmarklet compiled."));
+
+	return stream
+});
 
 
 
