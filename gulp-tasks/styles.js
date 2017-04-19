@@ -62,12 +62,7 @@ global.gulp.task('styles-form-build', ['stylus-form'], function(){
 		global.buildFolder + "cf/ui/cf-info.css",
 		global.buildFolder + "cf/ui/cf-list-button.css",
 		global.buildFolder + "cf/ui/chat/cf-chat-response.css",
-		global.buildFolder + "cf/ui/chat/cf-chat.css",
-
-		"!" + global.buildFolder + "conversational-form-docs.css",
-		"!" + global.buildFolder + "conversational-form-docs.min.css",
-		"!" + global.buildFolder + "conversational-form.css",
-		"!" + global.distFolder + "conversational-form.min.css",
+		global.buildFolder + "cf/ui/chat/cf-chat.css"
 	]
 
 	var stream = global.gulp.src(src)
