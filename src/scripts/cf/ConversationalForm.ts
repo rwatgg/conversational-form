@@ -348,9 +348,10 @@ namespace cf {
 						let fieldset: HTMLFieldSetElement = groups[group][0].domElement.parentNode;
 						if(fieldset){
 							if(fieldset.tagName.toLowerCase() !== "fieldset"){
-								fieldset = groups[group][0].parentNode.parentNode;
-								if(fieldset && fieldset.tagName.toLowerCase() !== "fieldset"){
+								fieldset = groups[group][0].parentNode;
+								if(!fieldset || fieldset.tagName.toLowerCase() !== "fieldset"){
 									fieldset = null;
+									// no fieldset found..
 								}
 							}
 						}

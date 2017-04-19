@@ -47,8 +47,7 @@ main.content section[role="form"] fieldset {
   margin-bottom: 20px;
   max-width: 400px;
 }
-main.content section[role="form"] fieldset:nth-child(6),
-main.content section[role="form"] fieldset:nth-child(7) {
+main.content section[role="form"] fieldset.hide {
   display: none;
 }
 main.content section[role="form"] fieldset > * {

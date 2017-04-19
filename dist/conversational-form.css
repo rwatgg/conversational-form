@@ -210,7 +210,6 @@ div[cf-context],
 .conversational-form button,
 .conversational-form a {
   cursor: pointer;
-  text-decoration: none;
 }
 .conversational-form .emoji {
   width: 16px;
@@ -1669,6 +1668,12 @@ cf-chat-response text > div {
 }
 cf-chat-response text:not(.contains-image) {
   padding: 12px 24px 12px 24px;
+}
+cf-chat-response text a {
+  text-decoration: underline;
+}
+cf-chat-response text strong {
+  font-weight: 900;
 }
 cf-chat-response text.contains-image > div {
   max-width: 140px;

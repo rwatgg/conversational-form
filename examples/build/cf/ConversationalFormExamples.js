@@ -43,9 +43,12 @@ var ConversationalFormExamples = (function () {
             document.getElementById("info").classList.add('show');
             _this.introTimer = setTimeout(function () {
                 document.querySelector("section[role='form']").classList.add('show');
-                document.getElementById("cf-toggle-btn").classList.add('show');
+                var btn = document.getElementById("cf-toggle-btn");
+                if (btn) {
+                    btn.classList.add('show');
+                }
                 _this.introTimer = setTimeout(function () {
-                    if (!document.getElementById("examples-script").getAttribute("manual-init"))
+                    if (!document.getElementById("examples-script").hasAttribute("manual-init"))
                         _this.toggleConversation();
                 }, isDevelopment ? 0 : 1500);
             }, isDevelopment ? 0 : 3000);

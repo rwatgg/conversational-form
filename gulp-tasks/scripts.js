@@ -7,6 +7,8 @@ var notify = require("gulp-notify");
 var concat = require('gulp-concat');
 var rename = require('gulp-rename');
 var uglify = require('gulp-uglify');
+var replace = require('gulp-replace');
+var fs = require("fs");
 
 function swallowError(error) {
 	// If you want details of the error in the console
@@ -154,8 +156,7 @@ global.gulp.task('scripts-docs-build', ['typescript-docs'], function(){
 // bookmarklet..
 global.gulp.task('bookmarklet', function() {
 	var src = [
-		global.srcFolder + "/scripts/**/ConversationalBookmarklet.js",
-		"!" + global.srcFolder + "/scripts/typings/**/*.ts"
+		global.srcFolder + "/scripts/**/ConversationalBookmarklet.js"
 	];
 
 	var dst = global.buildFolder;
@@ -164,12 +165,14 @@ global.gulp.task('bookmarklet', function() {
 		.pipe(uglify())
 		.pipe(global.gulp.dest(dst))
 	
+	var examplesFolder = global.buildFolder+"../examples";
 	var fileContent = fs.readFileSync(global.buildFolder + "/cf/ConversationalBookmarklet.js", "utf8");
 	console.log(fileContent);
+	console.log(dst, examplesFolder);
 	
 	stream = global.gulp.src([global.srcFolder + "/html/bookmarklet.html"])
-		.pipe(replace('{script}', fileContent))
-		.pipe(gulp.dest(global.examplesFolder))
+		.pipe(replace('{{script}}', fileContent))
+		.pipe(global.gulp.dest(examplesFolder))
 		.pipe(livereload())
 		.pipe(notify("bookmarklet compiled."));
 

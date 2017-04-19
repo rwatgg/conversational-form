@@ -64,10 +64,13 @@ class ConversationalFormExamples{
 			this.introTimer = setTimeout(() => {
 
 				document.querySelector("section[role='form']").classList.add('show');
-				document.getElementById("cf-toggle-btn").classList.add('show');
+				const btn: HTMLElement = document.getElementById("cf-toggle-btn");
+				if(btn){
+					btn.classList.add('show');
+				}
 
 				this.introTimer = setTimeout(() => {
-					if(!document.getElementById("examples-script").getAttribute("manual-init"))
+					if(!document.getElementById("examples-script").hasAttribute("manual-init"))
 						this.toggleConversation()
 				}, isDevelopment ? 0 : 1500);
 			}, isDevelopment ? 0 : 3000);
