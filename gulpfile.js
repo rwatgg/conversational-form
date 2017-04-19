@@ -23,7 +23,7 @@ global.buildFolder = buildFolder;
 var distFolder = rootPath + 'dist/';
 global.distFolder = distFolder;
 
-var tasks = ['bower', 'scripts-docs-build', 'scripts-examples-build', 'scripts-form-build', 'styles-docs-build', 'styles-examples-build', 'styles-form-build', 'copy-images'];
+var tasks = ['bower', 'bookmarklet-loader', 'scripts-docs-build', 'scripts-examples-build', 'scripts-form-build', 'styles-docs-build', 'styles-examples-build', 'styles-form-build', 'copy-images'];
 
 // Watch Files For Changes
 global.gulp.task('watch', tasks, function() {

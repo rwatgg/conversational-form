@@ -63,6 +63,8 @@ global.gulp.task('scripts-form', ['typescript-form'], function() {
 global.gulp.task('scripts-form-build', ['scripts-form'], function(){
 	// build order is important in a inheritance world
 	var src = [
+		"!" + global.buildFolder + "cf/BookmarkletLoader.js",
+
 		global.buildFolder + "bower_components/promise-polyfill/promise.js",
 		global.buildFolder + "bower_components/custom-event-polyfill/custom-event-polyfill.js",
 
@@ -153,10 +155,24 @@ global.gulp.task('scripts-docs-build', ['typescript-docs'], function(){
 	return stream;
 });
 
-// bookmarklet..
-global.gulp.task('bookmarklet', function() {
+// bookmarklet
+global.gulp.task('bookmarklet-loader', ["bookmarklet", "bookmarklet-loader-build"], function() {
+	var dst = global.buildFolder;
+	var examplesFolder = global.buildFolder+"../examples";
+	var fileContent = fs.readFileSync(global.buildFolder + "cf/BookmarkletLoader.js", "utf8");
+	
+	stream = global.gulp.src([global.srcFolder + "/html/bookmarklet.html"])
+		.pipe(replace('{{script}}', fileContent))
+		.pipe(global.gulp.dest(examplesFolder))
+		.pipe(livereload())
+		.pipe(notify("bookmarklet compiled."));
+
+	return stream;
+});
+
+global.gulp.task('bookmarklet-loader-build', function() {
 	var src = [
-		global.srcFolder + "/scripts/**/ConversationalBookmarklet.js"
+		global.srcFolder + "/scripts/**/BookmarkletLoader.js"
 	];
 
 	var dst = global.buildFolder;
@@ -164,17 +180,19 @@ global.gulp.task('bookmarklet', function() {
 	var stream = global.gulp.src(src)
 		.pipe(uglify())
 		.pipe(global.gulp.dest(dst))
-	
-	var examplesFolder = global.buildFolder+"../examples";
-	var fileContent = fs.readFileSync(global.buildFolder + "/cf/ConversationalBookmarklet.js", "utf8");
-	console.log(fileContent);
-	console.log(dst, examplesFolder);
-	
-	stream = global.gulp.src([global.srcFolder + "/html/bookmarklet.html"])
-		.pipe(replace('{{script}}', fileContent))
-		.pipe(global.gulp.dest(examplesFolder))
-		.pipe(livereload())
-		.pipe(notify("bookmarklet compiled."));
+});
+
+global.gulp.task('bookmarklet', function() {
+	var src = [
+		global.srcFolder + "/scripts/**/ConversationalBookmarklet.js"
+	];
+
+	var dst = global.distFolder;
+
+	var stream = global.gulp.src(src)
+		.pipe(uglify())
+		.pipe(flatten())
+		.pipe(global.gulp.dest(dst))
 
 	return stream
 });

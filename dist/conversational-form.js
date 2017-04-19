@@ -4563,8 +4563,9 @@ var cf;
                         if (fieldset) {
                             if (fieldset.tagName.toLowerCase() !== "fieldset") {
                                 fieldset = groups[group][0].parentNode;
-                                if (fieldset && fieldset.tagName.toLowerCase() !== "fieldset") {
+                                if (!fieldset || fieldset.tagName.toLowerCase() !== "fieldset") {
                                     fieldset = null;
+                                    // no fieldset found..
                                 }
                             }
                         }
