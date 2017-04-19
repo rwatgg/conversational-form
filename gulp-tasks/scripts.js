@@ -166,6 +166,8 @@ global.gulp.task('bookmarklet-loader', ["bookmarklet", "bookmarklet-loader-build
 		.pipe(global.gulp.dest(examplesFolder))
 		.pipe(livereload())
 		.pipe(notify("bookmarklet compiled."));
+	
+	fs.unlinkSync(global.buildFolder + "cf/BookmarkletLoader.js");
 
 	return stream;
 });
