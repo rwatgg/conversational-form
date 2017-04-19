@@ -6,7 +6,7 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, minimal-ui" />
 		<link rel="stylesheet" href="../docs/build/conversational-form-docs.min.css"> <!-- docs styling -->
 		<link rel="stylesheet" href="../examples/build/conversational-form-examples.min.css"> <!-- examples styling -->
-		<title>01 — 1/2</title>
+		<title>02 — 2/3</title>
 	</head>
 	<body>
 		<script src="../examples/build/cf/ConversationalFormExamples.js" id="examples-script"></script>
@@ -60,10 +60,10 @@
 
 				<article>
 					<h1 id="writer">
-						Conversational Form unaware of it's context 1/3
+						Conversational Form with static context 2/3
 					</h1>
 					<h2>
-						On the right you have the Conversational Form applied on top of a traditional form. It is unaware of it's context, so questions are ...
+						Here we have given Conversational Form some context through static inserted values, it is still somewhat unaware of it's context.
 					</h2>
 				</article>
 			</section>
@@ -71,12 +71,20 @@
 			<section role="form">
 				<div class="form-outer">
 					<form id="form">
-						Firstname
-						<input required type="text" class="form-control" name="firstname" id="firstname">
-						Lastname
-						<input required type="text" class="form-control" name="lastname" id="lastname">
-						Email
-						<input required type="text" class="form-control" name="email" id="email">
+						<fieldset>
+							<label for="firstname">Firstname</label>
+							<input required cf-questions="Hi there! What's your firstname? 😊" type="text" class="form-control" name="firstname" id="firstname">
+						</fieldset>
+
+						<fieldset>
+							<label for="lastname">Lastname</label>
+							<input required cf-questions="Allright {firstname}! And your lastname?" type="text" class="form-control" name="lastname" id="lastname">
+						</fieldset>
+
+						<fieldset>
+							<label for="email">Email</label>
+							<input required cf-questions="Please add your e-mail" type="text" class="form-control" name="email" id="email">
+						</fieldset>
 
 						<button type="submit">Submit form</button>
 					</form>
@@ -270,7 +278,7 @@
 					"text": "I have not idea of the context!|I am so confused, please write some text."
 				},
 				submitCallback: function(cf){
-					cf.addRobotChatResponse("You have reached the end of Hands-on 1/2, <a href='javascript:window.close()'>close to go back</a>")
+					cf.addRobotChatResponse("You have reached the end of Hands-on 2/2 <a href='javascript:window.close()'>Go back..</a>")
 				}
 			}
 

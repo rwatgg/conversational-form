@@ -6,6 +6,7 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, minimal-ui" />
 		<link rel="stylesheet" href="../docs/build/conversational-form-docs.min.css"> <!-- docs styling -->
 		<link rel="stylesheet" href="../examples/build/conversational-form-examples.min.css"> <!-- examples styling -->
+		<title>02 — 3/3</title>
 	</head>
 	<body>
 		<script src="../examples/build/cf/ConversationalFormExamples.js" id="examples-script"></script>
@@ -59,18 +60,34 @@
 
 				<article>
 					<h1 id="writer">
-						Welcome to the workshop
+						Conversational Form connected to an AI API, 3/3
 					</h1>
 					<h2>
-						A Conversational Form generated from JSON, see file <a href="files/formless.json" target="_blank">formless.json</a>
+						Here we have given Conversational Form some context by connecting to an AI API.
 					</h2>
 				</article>
 			</section>
 
 			<section role="form">
 				<div class="form-outer">
-					<h2>No form, it's all JS</h2>
-					<form id="empty-form"></form>
+					<form id="form">
+						<fieldset>
+							<label for="firstname">name</label>
+							<input required cf-questions="Hi there! What's your firstname? 😊" type="text" class="form-control" name="firstname" id="firstname">
+						</fieldset>
+
+						<fieldset>
+							<label for="email">email</label>
+							<input required cf-questions="Allright {firstname}! And your lastname?" type="text" class="form-control" name="email" id="email">
+						</fieldset>
+
+						<fieldset>
+							<label for="address">address</label>
+							<input required cf-questions="Please add your e-mail" type="text" class="form-control" name="address" id="address">
+						</fieldset>
+
+						<button type="submit">Submit form</button>
+					</form>
 				</div>
 			</section>
 
@@ -254,113 +271,18 @@
 
 		<!-- Examples specific code below -->
 		<script>
-			// check formless.json
-			var testValidation = function(dto, success, error){
-				console.log("testValidation setup from formless.json, dto:", dto);
-				if(dto.text.indexOf("holmes") != -1)
-					return success();
-				return error();
-			};
-
-			var conversationalFormInstance;
-
-			// check formless.json
-			var onFormlessSubmitted = function(cf){
-				// var formData = cf.getFormData();
-				// var formDataSerialized = cf.getFormData(true);
-				// console.log("Formdata:", formData);
-				// console.log("Formdata, obj:", formDataSerialized);
-				conversationalFormInstance.addRobotChatResponse("You have reached the end of the workshop!")
-
+			var json = {
+				formEl: document.getElementById("form"),
+				context: document.getElementById("cf-context"),
+				dictionaryRobot:{
+					"text": "I have not idea of the context!|I am so confused, please write some text."
+				},
+				submitCallback: function(cf){
+					cf.addRobotChatResponse("You have reached the end of Hands-on 2/2 <a href='javascript:window.close()'>Go back..</a>")
+				}
 			}
 
-			var step = 0;
-
-			var onStepCallback = function(dto, success, error){
-				// fake load, to illustrate how oe could communicate with a back-end service which could return new tags based on answer.
-				var xhr = new XMLHttpRequest()
-				xhr.onload = function(event){
-					if(step++ == 0){
-						// add tags that are received from pseudo webservice ..
-						var tags = [
-							{
-								// basic tag
-								"tag": "input",
-								"type": "text",
-								"cf-questions": "Tag is injected at runtime, data from 'webservice', check source of <a href='formless.html' style='text-decoration:underline'>examples/formless.html</a>",
-								"cf-error": "Inject some text"
-							},
-							{
-								// tag group
-								"tag": "fieldset",
-								"type": "Checkboxes",
-								"cf-input-placeholder": "Tag group is injected",
-								"cf-questions": "Choose an injected tag",
-								"children":[
-									{
-										"tag": "input",
-										"type": "checkbox",
-										"name": "checkboxes-buttons-1",
-										"cf-label": "checkbox-x1",
-										"checked": "checked"
-									},
-									{
-										"tag": "input",
-										"type": "checkbox",
-										"name": "checkboxes-buttons-1",
-										"cf-label": "checkbox-x2"
-									}
-								]
-							}
-						];
-
-
-						console.log("Tags to parse and add at runtime to formless:", tags)
-
-						// add tag
-						// add tag at index
-						conversationalFormInstance.addTags(tags, true);
-					}
-
-					success()
-					
-				}
-				xhr.onerror = function(){
-					error("Webservice failed??")
-				}
-
-				xhr.open("GET", window.location.href);
-				xhr.send();
-			}
-
-			// load json file with formless data (files/formless.json)
-			window.addEventListener("load", function(){
-				var xhr = new XMLHttpRequest()
-				xhr.onload = function(event){
-					var str = xhr.response;
-					var json = JSON.parse(str);
-
-					console.log("JSON to parse as form:", json)
-
-					// start one w. string
-					// window.cf.ConversationalForm.startTheConversation(str);
-
-					// add callback hooks..
-					json.options.submitCallback = onFormlessSubmitted.bind(window);
-					json.options.flowStepCallback = onStepCallback.bind(window);
-					
-					// start one w. json
-					conversationalFormInstance = window.cf.ConversationalForm.startTheConversation(json);
-					document.getElementById("cf-context").appendChild(conversationalFormInstance.el);
-
-					// in-document form
-					// window.cf.ConversationalForm.startTheConversation({
-					// 	formEl: document.getElementById("empty-form")
-					// });
-				}
-				xhr.open("GET", "files/01-welcome.json");
-				xhr.send();
-			});
+			var conversationalFormInstance = window.cf.ConversationalForm.startTheConversation(json);
 		</script>
 
 	</body>

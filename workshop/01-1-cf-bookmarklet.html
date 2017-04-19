@@ -6,10 +6,10 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, minimal-ui" />
 		<link rel="stylesheet" href="../docs/build/conversational-form-docs.min.css"> <!-- docs styling -->
 		<link rel="stylesheet" href="../examples/build/conversational-form-examples.min.css"> <!-- examples styling -->
-		<title>02 — 2/2</title>
+		<title>01 — 1/2</title>
 	</head>
 	<body>
-		<script src="../examples/build/cf/ConversationalFormExamples.js" id="examples-script"></script>
+		<script src="../examples/build/cf/ConversationalFormExamples.js" id="examples-script" manual-init></script>
 
 		<main class="content">
 			<menu id="small-screen-menu">
@@ -37,7 +37,7 @@
 				</div>
 			</menu>
 
-			<div class="switch-btn" id="cf-toggle-btn" data-label="Enable Conversational Form" data-label-toggled="Disable Conversational Form">
+			<div class="switch-btn" ignore id="cf-toggle-btn" data-label="Enable Conversational Form" data-label-toggled="Disable Conversational Form">
 				<label class="switch">
 					<input type="checkbox" onclick="window.conversationalFormExamples.toggleConversation(event)">
 					<div class="slider round"></div>
@@ -60,18 +60,59 @@
 
 				<article>
 					<h1 id="writer">
-						Welcome to the workshop
+						The Bookmarklet to test online, 1/2
 					</h1>
 					<h2>
-						A Conversational Form generated from JSON, see file <a href="files/formless.json" target="_blank">formless.json</a>
+						Here is the bookmarklet 👉 <a class="btn" href='javascript:!function(){var e=document.createElement("script");e.onload=function(){document.body.classList.add("cf-bookmarklet-added");var e=document.getElementsByTagName("form");1==e.length&&document.body.classList.add("cf-bookmarklet-single");for(var t=0;t<e.length;t++){var o=e[t];if(!o.hasAttribute("cf-form")){var a=o.parentNode;(a.offsetWidth<200||a.offsetHeight<200)&&(a=document.body),window.cf.ConversationalForm.startTheConversation({formEl:o,context:a})}}},e.type="text/javascript",e.crossorigin="crossorigin";var t=(new Date).getTime();e.id="conversational-form-development",window.location.href.indexOf("http://localhost:8888/rwatgg-conversational-form")!==-1?e.src="../dist/conversational-form.min.js?cache="+t:e.src="https://rawgit.com/rwatgg/conversational-form/workshop-iam/dist/conversational-form.min.js?cache="+t,document.getElementsByTagName("head")[0].appendChild(e);var o=document.createElement("link");o.type="text/css",o.rel="stylesheet",window.location.href.indexOf("http://localhost:8888/rwatgg-conversational-form")!==-1?o.href="../dist/conversational-form.min.css?cache="+t:o.href="https://rawgit.com/rwatgg/conversational-form/workshop-iam/dist/conversational-form.min.css?cache="+t,o.appendChild(document.createTextNode("")),document.getElementsByTagName("head")[0].appendChild(o)}();'>Start the Conversation</a> drag the link to your Bookmarks Bar.
+						</br>
+						</br>
+						<a href="https://orbit.ai/" target="_blank">Test Orbit.ai contact form</a>
+						<a href="lll" target="_blank">Link to test #2</a>
 					</h2>
 				</article>
 			</section>
 
 			<section role="form">
 				<div class="form-outer">
-					<h2>No form, it's all JS</h2>
-					<form id="empty-form"></form>
+					<form id="form">
+						<h2>A traditional form, when bookmarklet has been added, then try and click to see the result.</h2>
+						</br>
+						</br>
+						<fieldset>
+							<label for="firstname">Firstname</label>
+							<input required cf-questions="Hi there! What's your firstname? 😊" type="text" class="form-control" name="firstname" id="firstname">
+						</fieldset>
+
+						<fieldset>
+							<label for="lastname">Lastname</label>
+							<input required cf-questions="Allright {firstname}! And your lastname?" type="text" class="form-control" name="lastname" id="lastname">
+						</fieldset>
+
+						<fieldset>
+							<label for="email">Email</label>
+							<input required cf-questions="Please add your e-mail" type="text" class="form-control" name="email" id="email">
+						</fieldset>
+
+						<fieldset cf-questions="Ok {firstname} {lastname}, choose faviourite xyz">
+							Choose faviourite xyz
+							<label for="intro-yes">
+								X is my fav
+								<input type="radio" name="xyz" id="intro-yes" value="x">
+							</label>
+
+							<label for="intro-no">
+								Y is my fav
+								<input type="radio" name="xyz" id="intro-no" value="y">
+							</label>
+
+							<label for="intro-disabled">
+								Z is my fav
+								<input type="radio" name="xyz" id="intro-hm" value="z">
+							</label>
+						</fieldset>
+
+						<button type="submit">Submit form</button>
+					</form>
 				</div>
 			</section>
 
@@ -255,113 +296,7 @@
 
 		<!-- Examples specific code below -->
 		<script>
-			// check formless.json
-			var testValidation = function(dto, success, error){
-				console.log("testValidation setup from formless.json, dto:", dto);
-				if(dto.text.indexOf("holmes") != -1)
-					return success();
-				return error();
-			};
-
-			var conversationalFormInstance;
-
-			// check formless.json
-			var onFormlessSubmitted = function(cf){
-				// var formData = cf.getFormData();
-				// var formDataSerialized = cf.getFormData(true);
-				// console.log("Formdata:", formData);
-				// console.log("Formdata, obj:", formDataSerialized);
-				conversationalFormInstance.addRobotChatResponse("You have reached the end of the workshop!")
-
-			}
-
-			var step = 0;
-
-			var onStepCallback = function(dto, success, error){
-				// fake load, to illustrate how oe could communicate with a back-end service which could return new tags based on answer.
-				var xhr = new XMLHttpRequest()
-				xhr.onload = function(event){
-					if(step++ == 0){
-						// add tags that are received from pseudo webservice ..
-						var tags = [
-							{
-								// basic tag
-								"tag": "input",
-								"type": "text",
-								"cf-questions": "Tag is injected at runtime, data from 'webservice', check source of <a href='formless.html' style='text-decoration:underline'>examples/formless.html</a>",
-								"cf-error": "Inject some text"
-							},
-							{
-								// tag group
-								"tag": "fieldset",
-								"type": "Checkboxes",
-								"cf-input-placeholder": "Tag group is injected",
-								"cf-questions": "Choose an injected tag",
-								"children":[
-									{
-										"tag": "input",
-										"type": "checkbox",
-										"name": "checkboxes-buttons-1",
-										"cf-label": "checkbox-x1",
-										"checked": "checked"
-									},
-									{
-										"tag": "input",
-										"type": "checkbox",
-										"name": "checkboxes-buttons-1",
-										"cf-label": "checkbox-x2"
-									}
-								]
-							}
-						];
-
-
-						console.log("Tags to parse and add at runtime to formless:", tags)
-
-						// add tag
-						// add tag at index
-						conversationalFormInstance.addTags(tags, true);
-					}
-
-					success()
-					
-				}
-				xhr.onerror = function(){
-					error("Webservice failed??")
-				}
-
-				xhr.open("GET", window.location.href);
-				xhr.send();
-			}
-
-			// load json file with formless data (files/formless.json)
-			window.addEventListener("load", function(){
-				var xhr = new XMLHttpRequest()
-				xhr.onload = function(event){
-					var str = xhr.response;
-					var json = JSON.parse(str);
-
-					console.log("JSON to parse as form:", json)
-
-					// start one w. string
-					// window.cf.ConversationalForm.startTheConversation(str);
-
-					// add callback hooks..
-					json.options.submitCallback = onFormlessSubmitted.bind(window);
-					json.options.flowStepCallback = onStepCallback.bind(window);
-					
-					// start one w. json
-					conversationalFormInstance = window.cf.ConversationalForm.startTheConversation(json);
-					document.getElementById("cf-context").appendChild(conversationalFormInstance.el);
-
-					// in-document form
-					// window.cf.ConversationalForm.startTheConversation({
-					// 	formEl: document.getElementById("empty-form")
-					// });
-				}
-				xhr.open("GET", "files/01-welcome.json");
-				xhr.send();
-			});
+			// conversational will start through bookmarklet
 		</script>
 
 	</body>
