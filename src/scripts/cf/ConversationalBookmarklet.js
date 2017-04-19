@@ -10,6 +10,10 @@
 			document.body.classList.add("cf-bookmarklet-single");
 		}
 
+		if(standardForms.length == 0){
+			window.alert("No Conversational Forms found..");
+		}
+
 		for(var i = 0; i < standardForms.length; i++){
 			var form = standardForms[i];
 			if(!form.hasAttribute("cf-form")){
