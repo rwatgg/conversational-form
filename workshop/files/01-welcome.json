@@ -20,7 +20,8 @@
 					"tag": "input",
 					"type": "radio",
 					"name": "start",
-					"cf-label": "Nope.. :sadface:"
+					"cf-label": "Nope.. :sadface:",
+					"disabled": "disabled"
 				}
 			]
 		},
@@ -44,8 +45,9 @@
 		{
 			"tag": "input",
 			"type": "text",
-			"value": "",
-			"cf-questions": "Input w. prefilled value"
+			"pattern": "^next$",
+			"value": "next",
+			"cf-questions": "Let's go to the first example, write 'next'"
 		},
 		{
 			"tag": "select",

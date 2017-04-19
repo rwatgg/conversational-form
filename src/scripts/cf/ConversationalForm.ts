@@ -115,7 +115,9 @@ namespace cf {
 		private preventAutoStart: boolean = false;
 
 		constructor(options: ConversationalFormOptions){
-			window.ConversationalForm = this;
+			if(!window.ConversationalForm){
+				window.ConversationalForm = {};
+			}
 
 			this.cdnPath = this.cdnPath.split("{version}").join(this.version.split(".").join(""));
 
@@ -619,7 +621,6 @@ namespace cf {
 			}
 		}
 	}
-
 }
 
 if(document.readyState == "complete"){

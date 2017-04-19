@@ -292,8 +292,17 @@ try {
 	}(function ($) {
 		$.fn.conversationalForm = function (options /* ConversationalFormOptions, see README */) {
 			options = options || {};
-			if(!options.formEl)
+			if(!options.formEl){
 				options.formEl = this[0];
+			}
+
+			if(!options.context){
+				var formContexts = document.querySelectorAll("*[cf-context]");
+				if(formContexts[0]){
+					options.context = formContexts[0];
+				}
+			}
+
 			return new cf.ConversationalForm(options);
 		};
 	}
@@ -348,6 +357,8 @@ var cf;
             var head = document.head || document.getElementsByTagName("head")[0];
             var script = document.createElement("script");
             script.type = "text/javascript";
+            script.async = true;
+            script.defer = true;
             script.onload = function () {
                 // we use https://github.com/Ranks/emojify.js as a standard
                 Helpers.emojilib = window[lib];
@@ -2166,6 +2177,13 @@ var cf;
             enumerable: true,
             configurable: true
         });
+        Object.defineProperty(TagGroup.prototype, "label", {
+            get: function () {
+                return "";
+            },
+            enumerable: true,
+            configurable: true
+        });
         Object.defineProperty(TagGroup.prototype, "name", {
             get: function () {
                 return this.elements[0].name;
@@ -2173,9 +2191,9 @@ var cf;
             enumerable: true,
             configurable: true
         });
-        Object.defineProperty(TagGroup.prototype, "label", {
+        Object.defineProperty(TagGroup.prototype, "id", {
             get: function () {
-                return this.elements[0].label;
+                return "tag-group";
             },
             enumerable: true,
             configurable: true
@@ -3261,6 +3279,9 @@ var cf;
                     text: this.getInputValue()
                 };
             }
+            // add current tag to DTO if not set
+            if (!value.tag)
+                value.tag = this.currentTag;
             value.input = this;
             value.tag = this.currentTag;
             return value;
@@ -4618,7 +4639,6 @@ var cf;
             tags = this.setupTagGroups(tags);
             // add new tags to the flow
             this.tags = this.flowManager.addTags(tags, addAfterCurrentStep ? this.flowManager.getStep() + 1 : atIndex);
-            console.log(this.tags);
             //this.flowManager.startFrom ?
         };
         /**

@@ -62,14 +62,14 @@
 						Welcome to the workshop
 					</h1>
 					<h2>
-						By now you should have a good grasp of what the Workshop is about, on the right you will have the links to the various inspirational pieces.
+						By now you should have a good grasp of what the Workshop is about, on the right you have the flow that will guide you through each section.
 					</h2>
 				</article>
 			</section>
 
 			<section role="form">
 				<div class="form-outer">
-					<h2>No form, it's all JS</h2>
+					<h2>All JSON</h2>
 					<form id="empty-form"></form>
 				</div>
 			</section>
@@ -262,7 +262,7 @@
 				return error();
 			};
 
-			var cf;
+			var conversationalFormInstance;
 
 			// check formless.json
 			var onFormlessSubmitted = function(cf){
@@ -277,60 +277,14 @@
 			var step = 0;
 
 			var onStepCallback = function(dto, success, error){
-				// fake load, to illustrate how oe could communicate with a back-end service which could return new tags based on answer.
-				var xhr = new XMLHttpRequest()
-				xhr.onload = function(event){
-					if(step++ == 0){
-						// add tags that are received from pseudo webservice ..
-						var tags = [
-							{
-								// basic tag
-								"tag": "input",
-								"type": "text",
-								"cf-questions": "Tag is injected at runtime, data from 'webservice', check source of <a href='formless.html' style='text-decoration:underline'>examples/formless.html</a>",
-								"cf-error": "Inject some text"
-							},
-							{
-								// tag group
-								"tag": "fieldset",
-								"type": "Checkboxes",
-								"cf-input-placeholder": "Tag group is injected",
-								"cf-questions": "Choose an injected tag",
-								"children":[
-									{
-										"tag": "input",
-										"type": "checkbox",
-										"name": "checkboxes-buttons-1",
-										"cf-label": "checkbox-x1",
-										"checked": "checked"
-									},
-									{
-										"tag": "input",
-										"type": "checkbox",
-										"name": "checkboxes-buttons-1",
-										"cf-label": "checkbox-x2"
-									}
-								]
-							}
-						];
-
-
-						console.log("Tags to parse and add at runtime to formless:", tags)
-
-						// add tag
-						// add tag at index
-						cf.addTags(tags, true);
+				if(dto.text.toLowerCase() ==  "next"){
+					step++;
+					if(step == 1){
+						window.open("01-1-static.html")
 					}
-
-					success()
-					
-				}
-				xhr.onerror = function(){
-					error("Webservice failed??")
 				}
 
-				xhr.open("GET", window.location.href);
-				xhr.send();
+				success();
 			}
 
 			// load json file with formless data (files/formless.json)
@@ -342,21 +296,13 @@
 
 					console.log("JSON to parse as form:", json)
 
-					// start one w. string
-					// window.cf.ConversationalForm.startTheConversation(str);
-
 					// add callback hooks..
 					json.options.submitCallback = onFormlessSubmitted.bind(window);
 					json.options.flowStepCallback = onStepCallback.bind(window);
 					
 					// start one w. json
-					cf = window.cf.ConversationalForm.startTheConversation(json);
-					document.getElementById("cf-context").appendChild(cf.el);
-
-					// in-document form
-					// window.cf.ConversationalForm.startTheConversation({
-					// 	formEl: document.getElementById("empty-form")
-					// });
+					conversationalFormInstance = window.cf.ConversationalForm.startTheConversation(json);
+					document.getElementById("cf-context").appendChild(conversationalFormInstance.el);
 				}
 				xhr.open("GET", "files/01-welcome.json");
 				xhr.send();

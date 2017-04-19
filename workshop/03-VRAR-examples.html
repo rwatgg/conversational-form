@@ -262,7 +262,7 @@
 				return error();
 			};
 
-			var cf;
+			var conversationalFormInstance;
 
 			// check formless.json
 			var onFormlessSubmitted = function(cf){
@@ -270,7 +270,7 @@
 				// var formDataSerialized = cf.getFormData(true);
 				// console.log("Formdata:", formData);
 				// console.log("Formdata, obj:", formDataSerialized);
-				cf.addRobotChatResponse("You have reached the end of the workshop!")
+				conversationalFormInstance.addRobotChatResponse("You have reached the end of the workshop!")
 
 			}
 
@@ -319,7 +319,7 @@
 
 						// add tag
 						// add tag at index
-						cf.addTags(tags, true);
+						conversationalFormInstance.addTags(tags, true);
 					}
 
 					success()
@@ -350,8 +350,8 @@
 					json.options.flowStepCallback = onStepCallback.bind(window);
 					
 					// start one w. json
-					cf = window.cf.ConversationalForm.startTheConversation(json);
-					document.getElementById("cf-context").appendChild(cf.el);
+					conversationalFormInstance = window.cf.ConversationalForm.startTheConversation(json);
+					document.getElementById("cf-context").appendChild(conversationalFormInstance.el);
 
 					// in-document form
 					// window.cf.ConversationalForm.startTheConversation({
