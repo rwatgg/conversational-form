@@ -135,7 +135,7 @@ global.gulp.task('typescript-docs', function() {
 		.pipe(livereload())
 		.pipe(notify("Typescript compiled."));
 
-	return stream
+	return stream;
 });
 
 global.gulp.task('scripts-docs-build', ['typescript-docs'], function(){
@@ -181,7 +181,9 @@ global.gulp.task('bookmarklet-loader-build', function() {
 
 	var stream = global.gulp.src(src)
 		.pipe(uglify())
-		.pipe(global.gulp.dest(dst))
+		.pipe(global.gulp.dest(dst));
+
+	return stream;
 });
 
 global.gulp.task('bookmarklet', function() {
