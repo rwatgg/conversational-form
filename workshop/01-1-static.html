@@ -72,17 +72,17 @@
 					<form id="form">
 						<fieldset>
 							<label for="firstname">Firstname</label>
-							<input required cf-questions="Hi there! What's your firstname? 😊" type="text" class="form-control" name="firstname" id="firstname">
+							<input required type="text" class="form-control" name="firstname" id="firstname">
 						</fieldset>
 
 						<fieldset>
 							<label for="lastname">Lastname</label>
-							<input required cf-questions="Allright {firstname}! And your lastname?" type="text" class="form-control" name="lastname" id="lastname">
+							<input required type="text" class="form-control" name="lastname" id="lastname">
 						</fieldset>
 
 						<fieldset>
 							<label for="email">Email</label>
-							<input required cf-questions="Please add your e-mail" type="text" class="form-control" name="email" id="email">
+							<input required type="text" class="form-control" name="email" id="email">
 						</fieldset>
 
 						<button type="submit">Submit form</button>
@@ -282,7 +282,6 @@
 			}
 
 			var conversationalFormInstance = window.cf.ConversationalForm.startTheConversation(json);
-
 		</script>
 
 	</body>
